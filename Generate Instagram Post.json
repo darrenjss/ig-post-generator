@@ -1,0 +1,366 @@
+{
+  "name": "Generate Instagram Post",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0d16b178-1e4f-4bf5-93d5-3a8fa06e1589",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "feedUrl": "https://feeds.feedburner.com/propertywire"
+      },
+      "type": "n8n-nodes-base.rssFeedReadTrigger",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "42763c14-4a8a-4dcb-b68c-39d8baec8bd7",
+      "name": "RSS Feed Trigger"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a social media content creator for a property company.\n\nTransform this business news into an Instagram post.\n\nTitle: {{$json[\"title\"]}}\nContent: {{$json[\"contentSnippet\"]}}\n\nStructure:\n- Hook (1 strong sentence)\n- Short summary (2–3 sentences)\n- 3 key insights in bullet points\n- Call-to-action\n- 5 relevant hashtags\n\nTone: Professional but engaging.\nTarget audience: Property investors and home buyers."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        -192
+      ],
+      "id": "b96c0d83-8c0c-4d46-951b-eb6da80d58f6",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Fa5sXdtaz80P2tUO",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "16Jnxhu_ehGMRrIIrpH5-tvRcA27awUk0KCSSkqPkfZI",
+          "mode": "list",
+          "cachedResultName": "Caption",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16Jnxhu_ehGMRrIIrpH5-tvRcA27awUk0KCSSkqPkfZI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16Jnxhu_ehGMRrIIrpH5-tvRcA27awUk0KCSSkqPkfZI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{$now}}",
+            "Title ": "={{$json[\"title\"]}}",
+            "Link": "={{$json[\"link\"]}}",
+            "Generated Caption": "={{$json[\"output\"][0][\"content\"][0][\"text\"]}}",
+            "Images Link": "={{$json[\"webViewLink\"]}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title ",
+              "displayName": "Title ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Generated Caption",
+              "displayName": "Generated Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Images Link",
+              "displayName": "Images Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Approved",
+              "displayName": "Approved",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1472,
+        80
+      ],
+      "id": "a4baabce-c04b-4bc1-98df-44b71f0eb3e4",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "HYqWLwTuYzyZn4jK",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "=Create a modern Instagram post image about this property news:\n\n{{$json[\"output\"][0][\"content\"][0][\"text\"]}}\n\nStyle:\n- Clean real estate marketing design\n- Minimalist\n- Professional\n- Instagram square (1:1)\n- High resolution",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        -224
+      ],
+      "id": "bb102f4e-cb48-4a40-868b-b7e395051b46",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": "Fa5sXdtaz80P2tUO",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1168,
+        176
+      ],
+      "id": "8215b2e9-bca4-4cd9-b7fd-6d30ef89c8ac",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "name": "=Property_Post_{{$now}}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1VXCQU72tVOaVyEZ50BrdcktQ8M6GNC9s",
+          "mode": "list",
+          "cachedResultName": "Image n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1VXCQU72tVOaVyEZ50BrdcktQ8M6GNC9s"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        896,
+        -224
+      ],
+      "id": "7c69834c-9682-453f-9716-9a7a5c9fb1b9",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JjRXRCKoDcU5vzxB",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$json[\"id\"]}}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1136,
+        -224
+      ],
+      "id": "4c127d4c-78a3-48a3-99fc-110039e22936",
+      "name": "Share file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JjRXRCKoDcU5vzxB",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Feed Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "23f44364-3f83-452b-976d-df59cc7baf72",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "939208b808d3ad19c64fc2957e74d047979e4570d4d626a4c71b42af6daafc9a"
+  },
+  "id": "NbqkPgKr6kFX2mNS",
+  "tags": []
+}
