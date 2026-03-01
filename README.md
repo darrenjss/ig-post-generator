@@ -1,4 +1,4 @@
-**Instagram Post Generator**
+### Instagram Post Generator
 
 ## Overview
 This project automates the generation of Instagram-ready posts from property news using RSS feeds and AI tools.
